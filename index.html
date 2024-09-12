@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сайт с PIN-кодом и скрытой кнопкой</title>
+    <title>Сайт с двумя PIN-кодами и скрытой кнопкой</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -144,7 +144,7 @@
 <button class="hidden-button hidden" id="hidden-button" onclick="openTestScreen()"></button>
 
 <script>
-    const correctPin = ["577", "573", "537"];  // Установленный PIN-код
+    const correctPins = ["577", "123"];  // Массив с двумя правильными PIN-кодами
     let enteredPin = "";
 
     function addDigit(digit) {
@@ -160,10 +160,10 @@
     }
 
     function enterPin() {
-        if (correctPins.includes(enteredPin)) {
+        if (correctPins.includes(enteredPin)) {  // Проверяем наличие введённого PIN-кода в массиве
             document.getElementById("pin-screen").classList.add("hidden");
             document.getElementById("main-content").classList.remove("hidden");
-            document.getElementById("hidden-button").classList.remove("hidden"); // Показываем невидимую кнопку после ввода PIN-кода
+            document.getElementById("hidden-button").classList.remove("hidden"); // Показываем невидимую кнопку после ввода правильного PIN-кода
         } else {
             alert("Неправильный PIN-код. Попробуйте снова.");
             clearPin();
