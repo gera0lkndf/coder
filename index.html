@@ -160,7 +160,7 @@
     }
 
     function enterPin() {
-        if (enteredPin === correctPin) {
+        if (correctPins.includes(enteredPin)) {
             document.getElementById("pin-screen").classList.add("hidden");
             document.getElementById("main-content").classList.remove("hidden");
             document.getElementById("hidden-button").classList.remove("hidden"); // Показываем невидимую кнопку после ввода PIN-кода
