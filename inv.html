@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сайт с PIN-кодом и скрытой кнопкой</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .pin-container, .container {
+            background-color: #eee;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .pin-display {
+            width: 100%;
+            height: 50px;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-align: center;
+            background-color: #ddd;
+            border: none;
+            border-radius: 5px;
+        }
+        .pin-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+            justify-content: center;
+        }
+        .pin-button {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ddd;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .pin-button:hover {
+            background-color: #ccc;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        /* Стиль для скрытой кнопки */
+        .hidden-button {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Стили для экрана "ТЕСТ" */
+        .test-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+            font-size: 48px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- PIN-код ввод -->
+<div class="pin-container" id="pin-screen">
+    <input type="password" id="pin-display" class="pin-display" disabled placeholder="Введите PIN">
+    <div class="pin-buttons">
+        <button class="pin-button" onclick="addDigit('1')">1</button>
+        <button class="pin-button" onclick="addDigit('2')">2</button>
+        <button class="pin-button" onclick="addDigit('3')">3</button>
+        <button class="pin-button" onclick="addDigit('4')">4</button>
+        <button class="pin-button" onclick="addDigit('5')">5</button>
+        <button class="pin-button" onclick="addDigit('6')">6</button>
+        <button class="pin-button" onclick="addDigit('7')">7</button>
+        <button class="pin-button" onclick="addDigit('8')">8</button>
+        <button class="pin-button" onclick="addDigit('9')">9</button>
+        <button class="pin-button" onclick="clearPin()">C</button>
+        <button class="pin-button" onclick="addDigit('0')">0</button>
+        <button class="pin-button" onclick="enterPin()">OK</button>
+    </div>
+</div>
+
+<!-- Основной сайт -->
+<div class="container hidden" id="main-content">
+    <h1>Шифрование и Расшифровка</h1>
+    <button onclick="showInput('encode')">Закодировать</button>
+    <button onclick="showInput('decode')">Декодировать</button>
+
+    <div id="input-container" style="display: none;">
+        <input type="text" id="input-text" placeholder="Введите текст">
+        <button onclick="processMessage()">Обработать</button>
+    </div>
+
+    <div id="output"></div>
+</div>
+
+<!-- Невидимая кнопка внизу экрана -->
+<button class="hidden-button hidden" id="hidden-button" onclick="openTestScreen()"></button>
+
+<script>
+    const correctPin = "577";  // Установленный PIN-код
+    let enteredPin = "";
+
+    function addDigit(digit) {
+        if (enteredPin.length < 3) {  // Ограничение на 3 символа
+            enteredPin += digit;
+            document.getElementById("pin-display").value = "*".repeat(enteredPin.length);
+        }
+    }
+
+    function clearPin() {
+        enteredPin = "";
+        document.getElementById("pin-display").value = "";
+    }
+
+    function enterPin() {
+        if (enteredPin === correctPin) {
+            document.getElementById("pin-screen").classList.add("hidden");
+            document.getElementById("main-content").classList.remove("hidden");
+            document.getElementById("hidden-button").classList.remove("hidden"); // Показываем невидимую кнопку после ввода PIN-кода
+        } else {
+            alert("Неправильный PIN-код. Попробуйте снова.");
+            clearPin();
+        }
+    }
+
+    // Таблица шифрования и расшифровки
+    const encodingTable = {
+        'А': '_', 'Б': '\\', 'В': '₽', 'Г': '<', 'Д': ')', 'Е': '[', 'Ё': '[', 'Ж': '/', 'З': '}',
+        'И': ';', 'Й': '%', 'К': '=', 'Л': '(', 'М': ':', 'Н': ']', 'О': '+', 'П': '&', 'Р': '-',
+        'С': "'", 'Т': '!', 'У': '|', 'Ф': '@', 'Х': '°', 'Ц': '\\', 'Ч': '"', 'Ш': '>', 'Щ': '{',
+        'Ъ': '?', 'Ы': '#', 'Ь': '?', 'Э': '~', 'Ю': '%', 'Я': '*'
+    };
+
+    const decodingTable = {};
+    for (let key in encodingTable) {
+        decodingTable[encodingTable[key]] = key;
+    }
+
+    let currentAction = '';  // Определяем текущее действие (encode или decode)
+
+    function showInput(action) {
+        currentAction = action;
+        document.getElementById('input-container').style.display = 'block';
+        document.getElementById('input-text').value = '';
+        document.getElementById('output').innerHTML = '';
+    }
+
+    function processMessage() {
+        const message = document.getElementById('input-text').value;
+        let result = '';
+
+        if (currentAction === 'encode') {
+            result = encodeMessage(message);
+        } else if (currentAction === 'decode') {
+            result = decodeMessage(message);
+        }
+
+        document.getElementById('output').innerHTML = `Результат: ${result}`;
+    }
+
+    function encodeMessage(message) {
+        let encodedMessage = '';
+        for (let char of message.toUpperCase()) {
+            encodedMessage += encodingTable[char] || char;
+        }
+        return encodedMessage;
+    }
+
+    function decodeMessage(message) {
+        let decodedMessage = '';
+        for (let char of message) {
+            decodedMessage += decodingTable[char] || char;
+        }
+        return decodedMessage;
+    }
+
+    // Функция для открытия экрана "ТЕСТ"
+    function openTestScreen() {
+    const testWindow = window.open("", "_blank", "width=500,height=500");
+    testWindow.document.write('<style>body, html { margin: 0; padding: 0; height: 100%; display: flex; justify-content: center; align-items: center; background-color: black; }</style>');
+    testWindow.document.write('<a href="https://ibb.co/zfvtT43" target="_blank"><img src="https://i.ibb.co/ggKcLR0/image.png" alt="image" style="border: none; max-width: 100%; max-height: 100%;"></a>');
+}
+
+</script>
+
+</body>
+</html>
