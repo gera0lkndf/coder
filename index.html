@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сайт с двумя PIN-кодами и скрытой кнопкой</title>
+    <title>Сайт с PIN-кодом, выбором языка и скрытой кнопкой</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -128,7 +128,16 @@
 
 <!-- Основной сайт -->
 <div class="container hidden" id="main-content">
-    <h1>Шифрование и Расшифровка</h1>
+    <h1>Шифрование и Расшифровка PRO</h1>
+
+    <!-- Выбор языка -->
+    <label for="language">Выберите язык:</label>
+    <select id="language" onchange="changeLanguage()">
+        <option value="ru">Русский</option>
+        <option value="en">Английский</option>
+    </select>
+
+    <!-- Выбор действия -->
     <button onclick="showInput('encode')">Закодировать</button>
     <button onclick="showInput('decode')">Декодировать</button>
 
@@ -170,20 +179,32 @@
         }
     }
 
-    // Таблица шифрования и расшифровки
-    const encodingTable = {
+    // Таблицы шифрования для русского и английского языков
+    const encodingTableRu = {
         'А': '_', 'Б': '\\', 'В': '₽', 'Г': '<', 'Д': ')', 'Е': '[', 'Ё': '[', 'Ж': '/', 'З': '}',
         'И': ';', 'Й': '%', 'К': '=', 'Л': '(', 'М': ':', 'Н': ']', 'О': '+', 'П': '&', 'Р': '-',
         'С': "'", 'Т': '!', 'У': '|', 'Ф': '@', 'Х': '°', 'Ц': '\\', 'Ч': '"', 'Ш': '>', 'Щ': '{',
         'Ъ': '?', 'Ы': '#', 'Ь': '?', 'Э': '~', 'Ю': '%', 'Я': '*'
     };
 
-    const decodingTable = {};
-    for (let key in encodingTable) {
-        decodingTable[encodingTable[key]] = key;
+    const encodingTableEn = {
+    'A': '@', 'B': '#', 'C': '%', 'D': '&', 'E': '$', 'F': '^', 'G': '*', 'H': '~', 'I': '!', 
+    'J': '?', 'K': '+', 'L': '=', 'M': '<', 'N': '>', 'O': '/', 'P': '\\', 'Q': '|', 'R': '[', 
+    'S': ']', 'T': '{', 'U': '}', 'V': '(', 'W': ')', 'X': '_', 'Y': '-', 'Z': '`'
+};
+
+    const decodingTableRu = {};
+    for (let key in encodingTableRu) {
+        decodingTableRu[encodingTableRu[key]] = key;
+    }
+
+    const decodingTableEn = {};
+    for (let key in encodingTableEn) {
+        decodingTableEn[encodingTableEn[key]] = key;
     }
 
     let currentAction = '';  // Определяем текущее действие (encode или decode)
+    let currentLanguage = 'ru';  // По умолчанию выбран русский язык
 
     function showInput(action) {
         currentAction = action;
@@ -207,6 +228,7 @@
 
     function encodeMessage(message) {
         let encodedMessage = '';
+        const encodingTable = currentLanguage === 'ru' ? encodingTableRu : encodingTableEn;
         for (let char of message.toUpperCase()) {
             encodedMessage += encodingTable[char] || char;
         }
@@ -215,10 +237,16 @@
 
     function decodeMessage(message) {
         let decodedMessage = '';
+        const decodingTable = currentLanguage === 'ru' ? decodingTableRu : decodingTableEn;
         for (let char of message) {
             decodedMessage += decodingTable[char] || char;
         }
         return decodedMessage;
+    }
+
+    // Функция для смены языка
+    function changeLanguage() {
+        currentLanguage = document.getElementById('language').value;
     }
 
     // Функция для открытия экрана "ТЕСТ"
